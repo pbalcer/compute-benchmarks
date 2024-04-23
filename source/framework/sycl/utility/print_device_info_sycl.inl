@@ -28,7 +28,8 @@ std::map<sycl::backend, std::string> backendToString{
     {sycl::backend::ext_oneapi_level_zero, "oneAPI Level Zero"},
     {sycl::backend::ext_oneapi_cuda, "oneAPI CUDA"},
     {sycl::backend::all, "All"},
-    {sycl::backend::ext_intel_esimd_emulator, "ESIMD CPU"}};
+    //{sycl::backend::ext_intel_esimd_emulator, "ESIMD CPU"}
+};
 
 void printDeviceInfo() {
     auto device = sycl::device{sycl::gpu_selector_v};
@@ -45,7 +46,7 @@ void printDeviceInfo() {
     std::cout << "Driver version: " << driverVersion << std::endl;
 
     if (backend == sycl::backend::opencl) {
-        std::cout << "OpenCL C version: " << device.get_info<sycl::info::device::opencl_c_version>() << std::endl;
+       // std::cout << "OpenCL C version: " << device.get_info<sycl::info::device::opencl_c_version>() << std::endl;
     }
     std::cout << "\tDevice: " << deviceName << std::endl;
     std::cout << "\t\tVendor:\t" << vendorName << std::endl;
@@ -79,7 +80,7 @@ static void printAvailableDevices() {
         std::cout << "\t\tDriver version:\t" << driverVersion << std::endl;
         std::cout << "\t\tVersion:\t" << version << std::endl;
         if (backend == sycl::backend::opencl) {
-            std::cout << "\t\tOpenCL C Version:\t" << device.get_info<sycl::info::device::opencl_c_version>() << std::endl;
+           // std::cout << "\t\tOpenCL C Version:\t" << device.get_info<sycl::info::device::opencl_c_version>() << std::endl;
         }
 
         std::cout << std::endl;
