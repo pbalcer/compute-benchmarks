@@ -62,17 +62,28 @@ static TestResult run(const SubmitKernelArguments &arguments, Statistics &statis
         }
     };
 
+    int data[1] = {0};
+    sycl::buffer<int> DataBuf(data, 1);
+
     // Warmup
     for (auto iteration = 0u; iteration < arguments.numKernels; iteration++) {
-        queue.parallel_for(range, eat_time);
+        queue.submit([&](auto &h) {
+            sycl::accessor acc(DataBuf, h);
+            h.parallel_for(range, eat_time);
+        });
     }
     queue.wait();
+
 
     // Benchmark
     for (auto i = 0u; i < arguments.iterations; i++) {
         timer.measureStart();
-        for (auto iteration = 0u; iteration < arguments.numKernels; iteration++) {
-            queue.parallel_for(range, eat_time);
+            for (auto iteration = 0u; iteration < arguments.numKernels; iteration++) {
+
+            queue.submit([&](auto &h) {
+                sycl::accessor acc(DataBuf, h);
+                h.parallel_for(range, eat_time);
+            });
         }
 
         if (!arguments.measureCompletionTime) {
