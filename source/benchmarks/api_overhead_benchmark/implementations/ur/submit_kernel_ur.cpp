@@ -14,6 +14,7 @@
 #include "definitions/submit_kernel.h"
 
 #include <gtest/gtest.h>
+#include <pthread.h>
 
 static constexpr size_t n_dimensions = 3;
 static constexpr size_t global_size[] = {1, 1, 1};
@@ -32,6 +33,19 @@ static TestResult run(const SubmitKernelArguments &arguments, Statistics &statis
     // Setup
     UrState ur;
     Timer timer;
+    cpu_set_t cpuset;
+    pthread_t current_thread = pthread_self();
+
+    // Zero out the cpuset mask
+    CPU_ZERO(&cpuset);
+    // Set the mask to CPU 0
+    CPU_SET(1, &cpuset);
+
+    // Set the affinity for the current thread
+    int result = pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+    if (result != 0) {
+        return TestResult::KernelNotFound;
+    }
 
     // Create kernel
     auto spirvModule = FileHelper::loadBinaryFile("api_overhead_benchmark_eat_time.spv");
